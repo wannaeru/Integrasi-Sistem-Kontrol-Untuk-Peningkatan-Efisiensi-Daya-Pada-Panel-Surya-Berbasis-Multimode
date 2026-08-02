@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTEGRASI SISTEM KONTROL UNTUK PENINGKATAN EFISIENSI DAYA PADA PANEL SURYA BERBASIS MULTIMODE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 260px; background-color: #007bff; color: white; display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
+        .sidebar-title { padding: 0 15px 25px 15px; font-weight: 700; font-size: 13px; line-height: 1.5; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px; text-align: center; text-transform: uppercase; }
+        .sidebar-menu { list-style: none; padding: 0 10px; }
+        .sidebar-menu li { padding: 12px 20px; margin-bottom: 5px; cursor: pointer; border: 1px solid transparent; border-radius: 5px; transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .sidebar-menu li:hover { background-color: rgba(255,255,255,0.1); }
+        .sidebar-menu li.active { border-color: white; font-weight: 600; background-color: rgba(255,255,255,0.2); }
+        
+        .sidebar-status { margin-top: auto; padding: 20px; font-size: 12px; background: rgba(0,0,0,0.15); border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-status p { margin-bottom: 8px; }
+        .badge { background: #2ecc71; color: white; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+
+        .main-content { flex: 1; padding: 20px 30px; overflow-y: auto; position: relative; }
+        .menu-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .menu-section.active-section { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
+        .kpi-card { background: white; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .kpi-card .card-title { font-size: 13px; color: #555; margin-bottom: 10px; font-weight: 600; }
+        .kpi-card .card-value { font-size: 24px; font-weight: 700; color: #2c3e50; }
+        .kpi-card .card-unit { font-size: 14px; color: #777; font-weight: 400; }
+        .text-p1 { color: #3498db !important; }
+        .text-p2 { color: #e67e22 !important; }
+
+        .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .box-panel { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 4px solid #3498db; }
+        .box-panel.panel2 { border-top-color: #e67e22; }
+        .detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .detail-table th, .detail-table td { padding: 12px 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+        .detail-table th { color: #777; font-weight: normal; }
+        .detail-table td { font-weight: 600; color: #333; text-align: right; }
+
+        .chart-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .chart-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .chart-header { font-size: 16px; font-weight: 600; text-align: center; color: #333; margin-bottom: 15px; }
+
+        .mechanic-card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; max-width: 650px; margin: 0 auto; }
+        .mechanic-icon { font-size: 50px; color: #2ecc71; margin-bottom: 20px; }
+        .mechanic-status-text { font-size: 22px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
+        .mechanic-info { font-size: 14px; color: #7f8c8d; margin-bottom: 20px; }
+        
+        /* TOMBOL KONTROL MANUAL */
+        .btn-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ccc; }
+        .btn { border: none; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; color: white; }
+        .btn-scan { background-color: #f1c40f; color: #333; }
+        .btn-scan:hover { background-color: #f39c12; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); }
+        .btn-cuci { background-color: #3498db; }
+        .btn-cuci:hover { background-color: #2980b9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+        .btn-siram { background-color: #00cec9; }
+        .btn-siram:hover { background-color: #00b894; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 206, 201, 0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-title">INTEGRASI SISTEM KONTROL PADA PANEL SURYA BERBASIS MULTIMODE</div>
+        <ul class="sidebar-menu">
+            <li class="active" onclick="gantiMenu('menu-utama', this)"><i class="fas fa-desktop"></i> Data Utama</li>
+            <li onclick="gantiMenu('menu-grafik', this)"><i class="fas fa-chart-line"></i> Komparasi Grafik</li>
+            <li onclick="gantiMenu('menu-mekanik', this)"><i class="fas fa-cogs"></i> Sistem Mekanik</li>
+        </ul>
+
+        <div class="sidebar-status">
+            <p><i class="far fa-calendar-alt"></i> <span id="sys_hari">-</span></p>
+            <p><i class="far fa-clock"></i> <span id="sys_waktu">00:00:00</span></p>
+            <p style="margin-top: 15px; font-weight:bold; color:#ffeaa7;">Status Alat:</p>
+            <p><span class="badge" id="sys_status">Sistem Siap</span></p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- MENU 1: DATA UTAMA -->
+        <div id="menu-utama" class="menu-section active-section">
+            <h3 style="margin-bottom: 20px; color: #333;">Data Monitoring Utama</h3>
+            
+            <div class="cards-row">
+                <div class="kpi-card"><div class="card-title"><i class="fas fa-bolt text-p1"></i> Daya P1 (Multimode)</div>
+                    <div class="card-value text-p1" id="kpi_p1_p">0.00 <span class="card-unit">W</span></div>
+                </div>
+                <div class="kpi-card"><div class="card-title"><i class="fas fa-bolt text-p2"></i> Daya P2 (Kontrol)</div>
+                    <div class="card-value text-p2" id="kpi_p2_p">0.00 <span class="card-unit">W</span></div>
+                </div>
+                <div class="kpi-card"><div class="card-title"><i class="fas fa-thermometer-half text-p1"></i> Suhu P1 (Multimode)</div>
+                    <div class="card-value text-p1" id="kpi_p1_t">0.0 <span class="card-unit">°C</span></div>
+                </div>
+                <div class="kpi-card"><div class="card-title"><i class="fas fa-thermometer-half text-p2"></i> Suhu P2 (Kontrol)</div>
+                    <div class="card-value text-p2" id="kpi_p2_t">0.0 <span class="card-unit">°C</span></div>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="box-panel">
+                    <h4 style="color: #3498db; margin-bottom: 10px;"><i class="fas fa-solar-panel"></i> Detail Panel 1 (Multimode)</h4>
+                    <table class="detail-table">
+                        <tr><th>Tegangan Output</th><td id="det_p1_v">0.0 V</td></tr>
+                        <tr><th>Arus Output</th><td id="det_p1_i">0 mA</td></tr>
+                        <tr><th>Efisiensi Konversi</th><td id="det_p1_eff">0.0 %</td></tr>
+                    </table>
+                </div>
+                <div class="box-panel panel2">
+                    <h4 style="color: #e67e22; margin-bottom: 10px;"><i class="fas fa-solar-panel"></i> Detail Panel 2 (Kontrol)</h4>
+                    <table class="detail-table">
+                        <tr><th>Tegangan Output</th><td id="det_p2_v">0.0 V</td></tr>
+                        <tr><th>Arus Output</th><td id="det_p2_i">0 mA</td></tr>
+                        <tr><th>Intensitas Cahaya (Irradiance)</th><td id="det_p2_lux">0 lx</td></tr>
+                        <tr><th>Efisiensi Konversi</th><td id="det_p2_eff">0.0 %</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU 2: GRAFIK -->
+        <div id="menu-grafik" class="menu-section">
+            <h3 style="margin-bottom: 20px; color: #333;">Komparasi Performa Real-Time</h3>
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-header"><i class="fas fa-chart-area text-p1"></i> Perbandingan Daya (Watt)</div>
+                    <div style="position: relative; height: 250px; width: 100%;"><canvas id="grafikDaya"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header"><i class="fas fa-chart-line text-p2"></i> Perbandingan Tegangan (Volt Drop)</div>
+                    <div style="position: relative; height: 250px; width: 100%;"><canvas id="grafikTegangan"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header"><i class="fas fa-temperature-high" style="color:#e74c3c;"></i> Perbandingan Suhu Permukaan (°C)</div>
+                    <div style="position: relative; height: 250px; width: 100%;"><canvas id="grafikSuhu"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU 3: MEKANIK & KONTROL MANUAL -->
+        <div id="menu-mekanik" class="menu-section">
+            <h3 style="margin-bottom: 20px; color: #333;">Laporan Sistem Otomasi & Kontrol</h3>
+            
+            <div class="mechanic-card">
+                <i class="fas fa-robot mechanic-icon"></i>
+                <div class="mechanic-status-text" id="mekanik_status">Sistem Siap (Standby)</div>
+                <div class="mechanic-info">Fitur Kendali Jarak Jauh (IoT) aktif. Mesin dapat dipicu secara manual melalui tombol di bawah ini.</div>
+                
+                <table class="detail-table" style="text-align: left;">
+                    <tr><th><i class="fas fa-calendar-check"></i> Jadwal Pembersihan Rutin</th><td>Senin, Rabu, Jumat (09:00 WIB)</td></tr>
+                    <tr><th><i class="fas fa-eye"></i> Deteksi Sensor Debu Kaca</th><td id="mekanik_debu" style="color: #e74c3c; font-weight: bold;">- mm</td></tr>
+                    <tr><th><i class="fas fa-water"></i> Ambang Batas Pendingin</th><td>Aktif otomatis jika Suhu P1 $\ge$ 45.0 °C</td></tr>
+                </table>
+
+                <!-- TOMBOL KONTROL (KINI ADA 3 TOMBOL) -->
+                <div class="btn-group">
+                    <button onclick="triggerScan()" class="btn btn-scan"><i class="fas fa-search"></i> Hanya Scan Kaca</button>
+                    <button onclick="triggerCuci()" class="btn btn-cuci"><i class="fas fa-broom"></i> Scan & Cuci</button>
+                    <button onclick="triggerSiram()" class="btn btn-siram"><i class="fas fa-tint"></i> Siram Pendingin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FIREBASE & LOGIKA -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        function gantiMenu(idMenu, elemen) {
+            document.querySelectorAll('.menu-section').forEach(sec => sec.classList.remove('active-section'));
+            document.querySelectorAll('.sidebar-menu li').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(idMenu).classList.add('active-section');
+            elemen.classList.add('active');
+            if(idMenu === 'menu-grafik') { chartDaya.resize(); chartTegangan.resize(); chartSuhu.resize(); }
+        }
+
+        const chartOptions = { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } } }, animation: { duration: 0 }, plugins: { legend: { position: 'top' } } };
+
+        const ctxDaya = document.getElementById('grafikDaya').getContext('2d');
+        const chartDaya = new Chart(ctxDaya, { type: 'line', data: { labels: [], datasets: [ { label: 'Daya P1 (W)', borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true, tension: 0.3, data: [] }, { label: 'Daya P2 (W)', borderColor: '#e67e22', borderDash: [5, 5], fill: false, tension: 0.3, data: [] } ]}, options: chartOptions });
+
+        const ctxTeg = document.getElementById('grafikTegangan').getContext('2d');
+        const chartTegangan = new Chart(ctxTeg, { type: 'line', data: { labels: [], datasets: [ { label: 'Tegangan P1 (V)', borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.1)', fill: true, tension: 0.3, data: [] }, { label: 'Tegangan P2 (V)', borderColor: '#f39c12', borderDash: [5, 5], fill: false, tension: 0.3, data: [] } ]}, options: chartOptions });
+
+        const ctxSuhu = document.getElementById('grafikSuhu').getContext('2d');
+        const chartSuhu = new Chart(ctxSuhu, { type: 'line', data: { labels: [], datasets: [ { label: 'Suhu P1 (°C)', borderColor: '#e74c3c', backgroundColor: 'rgba(231, 76, 60, 0.1)', fill: true, tension: 0.3, data: [] }, { label: 'Suhu P2 (°C)', borderColor: '#9b59b6', borderDash: [5, 5], fill: false, tension: 0.3, data: [] } ]}, options: chartOptions });
+
+        var firebaseConfig = { databaseURL: "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/" };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
+
+        db.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data && data.panel1 && data.panel2 && data.sistem) {
+                document.getElementById('kpi_p1_p').innerHTML = data.panel1.daya.toFixed(2) + ' <span class="card-unit">W</span>';
+                document.getElementById('kpi_p2_p').innerHTML = data.panel2.daya_out.toFixed(2) + ' <span class="card-unit">W</span>';
+                document.getElementById('kpi_p1_t').innerHTML = data.panel1.suhu.toFixed(1) + ' <span class="card-unit">°C</span>';
+                document.getElementById('kpi_p2_t').innerHTML = data.panel2.suhu.toFixed(1) + ' <span class="card-unit">°C</span>';
+                
+                document.getElementById('det_p1_v').innerText = data.panel1.tegangan.toFixed(2) + ' V';
+                document.getElementById('det_p1_i').innerText = Math.round(data.panel1.arus) + ' mA';
+                document.getElementById('det_p1_eff').innerText = data.panel1.efisiensi.toFixed(1) + ' %';
+                
+                document.getElementById('det_p2_v').innerText = data.panel2.tegangan.toFixed(2) + ' V';
+                document.getElementById('det_p2_i').innerText = Math.round(data.panel2.arus) + ' mA';
+                document.getElementById('det_p2_lux').innerText = Math.round(data.panel2.lux) + ' lx';
+                document.getElementById('det_p2_eff').innerText = data.panel2.efisiensi.toFixed(1) + ' %';
+
+                document.getElementById('sys_hari').innerText = data.sistem.hari;
+                document.getElementById('sys_waktu').innerText = data.sistem.waktu;
+                document.getElementById('sys_status').innerText = data.sistem.status_mesin;
+
+                document.getElementById('mekanik_status').innerText = data.sistem.status_mesin;
+                document.getElementById('mekanik_debu').innerText = data.panel1.status_debu;
+
+                let waktuAkar = data.sistem.waktu;
+                
+                chartDaya.data.labels.push(waktuAkar); chartDaya.data.datasets[0].data.push(data.panel1.daya); chartDaya.data.datasets[1].data.push(data.panel2.daya_out);
+                chartTegangan.data.labels.push(waktuAkar); chartTegangan.data.datasets[0].data.push(data.panel1.tegangan); chartTegangan.data.datasets[1].data.push(data.panel2.tegangan);
+                chartSuhu.data.labels.push(waktuAkar); chartSuhu.data.datasets[0].data.push(data.panel1.suhu); chartSuhu.data.datasets[1].data.push(data.panel2.suhu);
+
+                if(chartDaya.data.labels.length > 15) {
+                    chartDaya.data.labels.shift(); chartDaya.data.datasets[0].data.shift(); chartDaya.data.datasets[1].data.shift();
+                    chartTegangan.data.labels.shift(); chartTegangan.data.datasets[0].data.shift(); chartTegangan.data.datasets[1].data.shift();
+                    chartSuhu.data.labels.shift(); chartSuhu.data.datasets[0].data.shift(); chartSuhu.data.datasets[1].data.shift();
+                }
+                
+                chartDaya.update(); chartTegangan.update(); chartSuhu.update();
+            }
+        });
+
+        function cekKesiapan() {
+            let status = document.getElementById('mekanik_status').innerText;
+            if(status !== "Sistem Siap" && status !== "Menyetabilkan Daya...") {
+                alert("Mesin sedang bekerja atau cooling down. Tunggu hingga status 'Sistem Siap'.");
+                return false;
+            } return true;
+        }
+
+        // TIGA FUNGSI KONTROL
+        function triggerScan() {
+            if(cekKesiapan() && confirm("Mulai SCAN KACA SAJA (Tanpa penyiraman air)?")) {
+                db.ref('/kontrol').update({ scan: true });
+                alert("Perintah Scan Terkirim!");
+            }
+        }
+        function triggerCuci() {
+            if(cekKesiapan() && confirm("Yakin ingin memulai siklus PEMBERSIHAN PENUH (Scan + Cuci)?")) {
+                db.ref('/kontrol').update({ cuci: true });
+                alert("Perintah Cuci Terkirim!");
+            }
+        }
+        function triggerSiram() {
+            if(cekKesiapan() && confirm("Yakin ingin menyalakan POMPA PENDINGIN?")) {
+                db.ref('/kontrol').update({ siram: true });
+                alert("Perintah Pendinginan Terkirim!");
+            }
+        }
+    </script>
+</body>
+</html>
