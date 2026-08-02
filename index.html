@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTEGRASI SISTEM KONTROL UNTUK PENINGKATAN EFISIENSI DAYA PADA PANEL SURYA BERBASIS MULTIMODE</title>
+    <title>INTEGRASI SISTEM KONTROL PADA PANEL SURYA BERBASIS MULTIMODE</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -54,7 +54,6 @@
         .mechanic-status-text { font-size: 22px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
         .mechanic-info { font-size: 14px; color: #7f8c8d; margin-bottom: 20px; }
         
-        /* TOMBOL KONTROL MANUAL */
         .btn-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ccc; }
         .btn { border: none; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; color: white; }
         .btn-scan { background-color: #f1c40f; color: #333; }
@@ -84,7 +83,6 @@
     </div>
 
     <div class="main-content">
-        <!-- MENU 1: DATA UTAMA -->
         <div id="menu-utama" class="menu-section active-section">
             <h3 style="margin-bottom: 20px; color: #333;">Data Monitoring Utama</h3>
             
@@ -96,10 +94,10 @@
                     <div class="card-value text-p2" id="kpi_p2_p">0.00 <span class="card-unit">W</span></div>
                 </div>
                 <div class="kpi-card"><div class="card-title"><i class="fas fa-thermometer-half text-p1"></i> Suhu P1 (Multimode)</div>
-                    <div class="card-value text-p1" id="kpi_p1_t">0.0 <span class="card-unit">°C</span></div>
+                    <div class="card-value text-p1" id="kpi_p1_t">0.0 <span class="card-unit">&deg;C</span></div>
                 </div>
                 <div class="kpi-card"><div class="card-title"><i class="fas fa-thermometer-half text-p2"></i> Suhu P2 (Kontrol)</div>
-                    <div class="card-value text-p2" id="kpi_p2_t">0.0 <span class="card-unit">°C</span></div>
+                    <div class="card-value text-p2" id="kpi_p2_t">0.0 <span class="card-unit">&deg;C</span></div>
                 </div>
             </div>
 
@@ -124,7 +122,6 @@
             </div>
         </div>
 
-        <!-- MENU 2: GRAFIK -->
         <div id="menu-grafik" class="menu-section">
             <h3 style="margin-bottom: 20px; color: #333;">Komparasi Performa Real-Time</h3>
             <div class="chart-grid">
@@ -137,28 +134,26 @@
                     <div style="position: relative; height: 250px; width: 100%;"><canvas id="grafikTegangan"></canvas></div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-header"><i class="fas fa-temperature-high" style="color:#e74c3c;"></i> Perbandingan Suhu Permukaan (°C)</div>
+                    <div class="chart-header"><i class="fas fa-temperature-high" style="color:#e74c3c;"></i> Perbandingan Suhu Permukaan (&deg;C)</div>
                     <div style="position: relative; height: 250px; width: 100%;"><canvas id="grafikSuhu"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <!-- MENU 3: MEKANIK & KONTROL MANUAL -->
         <div id="menu-mekanik" class="menu-section">
             <h3 style="margin-bottom: 20px; color: #333;">Laporan Sistem Otomasi & Kontrol</h3>
             
             <div class="mechanic-card">
                 <i class="fas fa-robot mechanic-icon"></i>
                 <div class="mechanic-status-text" id="mekanik_status">Sistem Siap (Standby)</div>
-                <div class="mechanic-info">Fitur Kendali Jarak Jauh (IoT) aktif. Mesin dapat dipicu secara manual melalui tombol di bawah ini.</div>
+                <div class="mechanic-info">Fitur Kendali Jarak Jauh (IoT) aktif. Mesin dapat dipicu secara otomatis atau dikontrol secara manual melalui tombol di bawah ini.</div>
                 
                 <table class="detail-table" style="text-align: left;">
                     <tr><th><i class="fas fa-calendar-check"></i> Jadwal Pembersihan Rutin</th><td>Senin, Rabu, Jumat (09:00 WIB)</td></tr>
                     <tr><th><i class="fas fa-eye"></i> Deteksi Sensor Debu Kaca</th><td id="mekanik_debu" style="color: #e74c3c; font-weight: bold;">- mm</td></tr>
-                    <tr><th><i class="fas fa-water"></i> Ambang Batas Pendingin</th><td>Aktif otomatis jika Suhu P1 $\ge$ 45.0 °C</td></tr>
+                    <tr><th><i class="fas fa-water"></i> Ambang Batas Pendingin</th><td>Aktif otomatis jika Suhu P1 &ge; 45.0 &deg;C</td></tr>
                 </table>
 
-                <!-- TOMBOL KONTROL (KINI ADA 3 TOMBOL) -->
                 <div class="btn-group">
                     <button onclick="triggerScan()" class="btn btn-scan"><i class="fas fa-search"></i> Hanya Scan Kaca</button>
                     <button onclick="triggerCuci()" class="btn btn-cuci"><i class="fas fa-broom"></i> Scan & Cuci</button>
@@ -168,7 +163,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT FIREBASE & LOGIKA -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -201,8 +195,8 @@
             if(data && data.panel1 && data.panel2 && data.sistem) {
                 document.getElementById('kpi_p1_p').innerHTML = data.panel1.daya.toFixed(2) + ' <span class="card-unit">W</span>';
                 document.getElementById('kpi_p2_p').innerHTML = data.panel2.daya_out.toFixed(2) + ' <span class="card-unit">W</span>';
-                document.getElementById('kpi_p1_t').innerHTML = data.panel1.suhu.toFixed(1) + ' <span class="card-unit">°C</span>';
-                document.getElementById('kpi_p2_t').innerHTML = data.panel2.suhu.toFixed(1) + ' <span class="card-unit">°C</span>';
+                document.getElementById('kpi_p1_t').innerHTML = data.panel1.suhu.toFixed(1) + ' <span class="card-unit">&deg;C</span>';
+                document.getElementById('kpi_p2_t').innerHTML = data.panel2.suhu.toFixed(1) + ' <span class="card-unit">&deg;C</span>';
                 
                 document.getElementById('det_p1_v').innerText = data.panel1.tegangan.toFixed(2) + ' V';
                 document.getElementById('det_p1_i').innerText = Math.round(data.panel1.arus) + ' mA';
@@ -238,13 +232,12 @@
 
         function cekKesiapan() {
             let status = document.getElementById('mekanik_status').innerText;
-            if(status !== "Sistem Siap" && status !== "Menyetabilkan Daya...") {
+            if(status !== "Sistem Siap" && status !== "Persiapan Sistem...") {
                 alert("Mesin sedang bekerja atau cooling down. Tunggu hingga status 'Sistem Siap'.");
                 return false;
             } return true;
         }
 
-        // TIGA FUNGSI KONTROL
         function triggerScan() {
             if(cekKesiapan() && confirm("Mulai SCAN KACA SAJA (Tanpa penyiraman air)?")) {
                 db.ref('/kontrol').update({ scan: true });
