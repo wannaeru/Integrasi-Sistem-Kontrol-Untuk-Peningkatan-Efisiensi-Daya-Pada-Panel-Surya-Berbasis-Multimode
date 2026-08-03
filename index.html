@@ -231,6 +231,9 @@
                     document.getElementById('det_p1_i').innerText = Math.round(data.panel1.arus) + ' mA';
                     document.getElementById('det_p1_eff').innerText = data.panel1.efisiensi.toFixed(1) + ' %';
                     document.getElementById('det_p1_debu').innerText = data.panel1.status_debu;
+                    
+                    // PENAMBAHAN: Mengambil status debu ke menu mekanik
+                    document.getElementById('mekanik_debu').innerText = data.panel1.status_debu;
                 }
                 if(data.panel2) {
                     document.getElementById('kpi_p2_p').innerText = data.panel2.daya_out.toFixed(2) + ' W';
@@ -244,7 +247,7 @@
                 if(data.sistem) {
                     document.getElementById('sidebar_jam').innerText = data.sistem.waktu || "00:00:00";
                     document.getElementById('sidebar_hari').innerText = data.sistem.hari || "-";
-                    document.getElementById('sidebar_tanggal').innerText = data.sistem.tanggal || "00/00/0000"; // TANGGAL MUNCUL DI SINI
+                    document.getElementById('sidebar_tanggal').innerText = data.sistem.tanggal || "00/00/0000"; 
                     document.getElementById('sidebar_status').innerText = data.sistem.status_mesin || "Standby";
                     document.getElementById('mekanik_status').innerText = data.sistem.status_mesin || "Standby";
                 }
