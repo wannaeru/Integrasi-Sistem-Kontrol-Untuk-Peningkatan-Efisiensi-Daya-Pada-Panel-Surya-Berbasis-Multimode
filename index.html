@@ -3,245 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring Panel Surya Multimode</title>
-    <!-- Memuat Font Awesome untuk Ikon -->
+    <title>INTEGRASI SISTEM KONTROL UNTUK PENINGKATAN EFISIENSI DAYA PADA PANEL SURYA BERBASIS MULTIMODE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; color: #333; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f6f9; display: flex; height: 100vh; overflow: hidden; }
         
-        /* SIDEBAR KIRI */
-        .sidebar { background-color: #007bff; color: white; width: 250px; min-height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .sidebar h3 { text-align: center; font-size: 18px; margin-bottom: 30px; line-height: 1.4; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px;}
-        .menu-btn { background: rgba(255,255,255,0.1); border: 1px solid white; color: white; padding: 12px; margin-bottom: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.3s;}
-        .menu-btn:hover { background: white; color: #007bff; }
-        .sidebar-bottom { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; font-size: 14px; }
-        .sidebar-bottom p { margin: 5px 0; }
-        .status-badge { background-color: #28a745; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px;}
+        /* SIDEBAR */
+        .sidebar { width: 280px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; padding: 20px; }
+        .sidebar h2 { font-size: 15px; text-align: center; margin-bottom: 25px; line-height: 1.5; color: #ecf0f1; }
+        .nav-link { padding: 12px 15px; color: #bdc3c7; text-decoration: none; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; transition: 0.3s; cursor: pointer; font-size: 14px; }
+        .nav-link:hover, .nav-link.active { background-color: #3498db; color: white; }
+        
+        .sidebar-info { margin-top: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; font-size: 13px; }
+        .sidebar-info p { margin-bottom: 6px; }
 
-        /* KONTEN KANAN */
-        .main-content { flex: 1; padding: 30px; box-sizing: border-box; overflow-y: auto; }
+        /* KONTEN UTAMA */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; background-color: #f4f6f9; }
+        .menu-section { display: none; }
+        .menu-section.active-section { display: block; }
+        
+        /* HEADER & TOMBOL DOWNLOAD */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h1 { margin: 0; color: #2c3e50; font-size: 24px; }
-        
-        /* TOMBOL DOWNLOAD */
-        .btn-download { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
-        .btn-download:hover { background-color: #218838; transform: translateY(-2px); }
+        .btn-download { background-color: #27ae60; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-download:hover { background-color: #219653; transform: translateY(-2px); }
 
-        /* KARTU KECIL (HIGHLIGHT) */
-        .card-container-small { display: flex; gap: 20px; margin-bottom: 30px; }
-        .card-small { background: white; padding: 20px; border-radius: 10px; flex: 1; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .card-small h4 { margin: 0 0 10px 0; color: #7f8c8d; font-size: 14px; }
-        .card-small h2 { margin: 0; color: #007bff; font-size: 28px; }
-        .card-small.orange h2 { color: #d35400; }
+        /* KARTU KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #3498db; }
+        .card-title { font-size: 13px; color: #7f8c8d; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .card-value { font-size: 24px; font-weight: bold; color: #2c3e50; }
+        .card-unit { font-size: 14px; color: #95a5a6; font-weight: normal; }
         
-        /* KARTU BESAR (DETAIL) */
-        .card-container-large { display: flex; gap: 20px; }
-        .card-large { background: white; padding: 25px; border-radius: 10px; flex: 1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #007bff;}
-        .card-large.orange-border { border-top-color: #d35400; }
-        .card-large h3 { margin-top: 0; margin-bottom: 20px; color: #007bff; display: flex; align-items: center; gap: 10px;}
-        .card-large.orange-border h3 { color: #d35400; }
-        
-        /* TABEL DETAIL */
-        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 15px;}
-        .detail-row:last-child { border-bottom: none; }
-        .detail-val { font-weight: bold; color: #2c3e50; }
+        .text-p1 { color: #2980b9 !important; }
+        .text-p2 { color: #e67e22 !important; }
+
+        /* DETAIL GRID */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .detail-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .detail-table th, .detail-table td { padding: 10px 0; border-bottom: 1px solid #ecf0f1; font-size: 13px; }
+        .detail-table th { color: #7f8c8d; font-weight: 600; text-align: left; }
+        .detail-table td { text-align: right; font-weight: bold; color: #2c3e50; }
+
+        /* MEKANIK */
+        .mechanic-card { background: white; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-width: 600px; margin: 0 auto; }
+        .mechanic-icon { font-size: 40px; color: #3498db; margin-bottom: 15px; }
+        .mechanic-status-text { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
+        .mechanic-info { font-size: 13px; color: #7f8c8d; margin-bottom: 20px; }
+
+        .btn-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ccc; }
+        .btn { border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; color: white; }
+        .btn-scan { background-color: #f1c40f; color: #333; }
+        .btn-cuci { background-color: #3498db; }
+        .btn-siram { background-color: #e74c3c; }
+
+        /* GRAFIK */
+        .chart-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .chart-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .chart-header { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <h3>INTEGRASI SISTEM KONTROL PADA PANEL SURYA BERBASIS MULTIMODE</h3>
+        <h2>PANEL SURYA MULTIMODE</h2>
         
-        <button class="menu-btn" style="background: white; color: #007bff;"><i class="fas fa-desktop"></i> Data Utama</button>
-        <button class="menu-btn"><i class="fas fa-chart-line"></i> Komparasi Grafik</button>
-        <button class="menu-btn"><i class="fas fa-cogs"></i> Sistem Mekanik</button>
+        <a class="nav-link active" onclick="switchMenu('utama', this)"><i class="fas fa-desktop"></i> Data Utama</a>
+        <a class="nav-link" onclick="switchMenu('grafik', this)"><i class="fas fa-chart-line"></i> Komparasi Grafik</a>
+        <a class="nav-link" onclick="switchMenu('mekanik', this)"><i class="fas fa-cogs"></i> Sistem Mekanik</a>
 
-        <div class="sidebar-bottom">
-            <!-- INI BAGIAN MENAMPILKAN TANGGAL, HARI & JAM -->
-            <p><i class="far fa-calendar-alt"></i> <span id="waktu_hari">Memuat...</span>, <span id="waktu_tanggal">Memuat...</span></p>
-            <p><i class="far fa-clock"></i> <span id="waktu_jam">Memuat...</span></p>
-            
-            <p style="margin-top: 15px; font-weight: bold;">Status Alat:</p>
-            <div class="status-badge" id="status_mesin">Memuat...</div>
+        <div class="sidebar-info">
+            <p><i class="far fa-calendar-alt"></i> <span id="sidebar_tanggal">Memuat...</span></p>
+            <p><i class="far fa-clock"></i> <span id="sidebar_jam">00:00:00</span> (<span id="sidebar_hari">-</span>)</p>
+            <p style="margin-top: 10px;">Status: <b id="sidebar_status" style="color: #2ecc71;">Standby</b></p>
         </div>
     </div>
 
     <!-- KONTEN UTAMA -->
     <div class="main-content">
-        
-        <div class="header-top">
-            <h1>Data Monitoring Utama</h1>
-            <!-- TOMBOL DOWNLOAD SESUAI PERMINTAAN DOSEN -->
-            <button class="btn-download" onclick="downloadDataExcel()">
-                <i class="fas fa-file-excel"></i> Download Excel
-            </button>
+
+        <!-- MENU 1: DATA UTAMA -->
+        <div id="menu-utama" class="menu-section active-section">
+            <div class="header-top">
+                <h3 style="color: #2c3e50;">Data Monitoring Utama</h3>
+                <button class="btn-download" onclick="downloadDataExcel()"><i class="fas fa-file-excel"></i> Download Excel</button>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card" style="border-left-color: #2980b9;">
+                    <div class="card-title"><i class="fas fa-bolt text-p1"></i> Daya P1 (Multimode)</div>
+                    <div class="card-value text-p1" id="kpi_p1_p">0.00 <span class="card-unit">W</span></div>
+                </div>
+                <div class="kpi-card" style="border-left-color: #e67e22;">
+                    <div class="card-title"><i class="fas fa-bolt text-p2"></i> Daya P2 (Kontrol)</div>
+                    <div class="card-value text-p2" id="kpi_p2_p">0.00 <span class="card-unit">W</span></div>
+                </div>
+                <div class="kpi-card" style="border-left-color: #2980b9;">
+                    <div class="card-title"><i class="fas fa-thermometer-half text-p1"></i> Suhu P1 (Multimode)</div>
+                    <div class="card-value text-p1" id="kpi_p1_t">0.0 <span class="card-unit">&deg;C</span></div>
+                </div>
+                <div class="kpi-card" style="border-left-color: #e67e22;">
+                    <div class="card-title"><i class="fas fa-thermometer-half text-p2"></i> Suhu P2 (Kontrol)</div>
+                    <div class="card-value text-p2" id="kpi_p2_t">0.0 <span class="card-unit">&deg;C</span></div>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h4 style="color: #2980b9; margin-bottom: 10px;"><i class="fas fa-solar-panel"></i> Detail Panel 1 (Multimode)</h4>
+                    <table class="detail-table">
+                        <tr><th>Tegangan Output</th><td id="det_p1_v">0.00 V</td></tr>
+                        <tr><th>Arus Output</th><td id="det_p1_i">0 mA</td></tr>
+                        <tr><th>Efisiensi Konversi</th><td id="det_p1_eff">0.0 %</td></tr>
+                        <tr><th>Status Debu</th><td id="det_p1_debu" style="color: #e74c3c;">-</td></tr>
+                    </table>
+                </div>
+
+                <div class="detail-card">
+                    <h4 style="color: #e67e22; margin-bottom: 10px;"><i class="fas fa-solar-panel"></i> Detail Panel 2 (Kontrol)</h4>
+                    <table class="detail-table">
+                        <tr><th>Tegangan Output</th><td id="det_p2_v">0.00 V</td></tr>
+                        <tr><th>Arus Output</th><td id="det_p2_i">0 mA</td></tr>
+                        <tr><th>Daya Masuk (Matahari)</th><td id="det_p2_in">0.00 W</td></tr>
+                        <tr><th>Intensitas Cahaya</th><td id="det_p2_lux">0 lx</td></tr>
+                        <tr><th>Efisiensi Konversi</th><td id="det_p2_eff">0.0 %</td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- HIGHLIGHT CARD -->
-        <div class="card-container-small">
-            <div class="card-small">
-                <h4><i class="fas fa-bolt"></i> Daya P1 (Multimode)</h4>
-                <h2 id="p1_daya">0.00 W</h2>
-            </div>
-            <div class="card-small orange">
-                <h4><i class="fas fa-bolt"></i> Daya P2 (Kontrol)</h4>
-                <h2 id="p2_daya_out">0.00 W</h2>
-            </div>
-            <div class="card-small">
-                <h4><i class="fas fa-thermometer-half"></i> Suhu P1 (Multimode)</h4>
-                <h2 id="p1_suhu">0.0 &deg;C</h2>
-            </div>
-            <div class="card-small orange">
-                <h4><i class="fas fa-thermometer-half"></i> Suhu P2 (Kontrol)</h4>
-                <h2 id="p2_suhu">0.0 &deg;C</h2>
+        <!-- MENU 2: GRAFIK -->
+        <div id="menu-grafik" class="menu-section">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">Komparasi Performa Real-Time</h3>
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-header"><i class="fas fa-bolt" style="color:#f1c40f;"></i> Perbandingan Daya (Watt)</div>
+                    <div style="position: relative; height: 220px; width: 100%;"><canvas id="grafikDaya"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header"><i class="fas fa-temperature-high" style="color:#e74c3c;"></i> Perbandingan Suhu Permukaan (&deg;C)</div>
+                    <div style="position: relative; height: 220px; width: 100%;"><canvas id="grafikSuhu"></canvas></div>
+                </div>
             </div>
         </div>
 
-        <!-- DETAIL CARD -->
-        <div class="card-container-large">
-            <!-- PANEL 1 -->
-            <div class="card-large">
-                <h3><i class="fas fa-solar-panel"></i> Detail Panel 1 (Multimode)</h3>
-                
-                <div class="detail-row">
-                    <span>Tegangan Output</span>
-                    <span class="detail-val" id="p1_tegangan">0.00 V</span>
-                </div>
-                <div class="detail-row">
-                    <span>Arus Output</span>
-                    <span class="detail-val" id="p1_arus">0 mA</span>
-                </div>
-                <div class="detail-row">
-                    <span>Efisiensi Konversi</span>
-                    <span class="detail-val" id="p1_efisiensi">0.0 %</span>
-                </div>
-                <div class="detail-row" style="background-color: #f8f9fa; padding: 12px 10px; border-radius: 5px; margin-top: 10px;">
-                    <span>Status Debu (Jarak)</span>
-                    <span class="detail-val" id="p1_debu" style="color:#e74c3c;">Standby</span>
-                </div>
-            </div>
+        <!-- MENU 3: MEKANIK & KONTROL MANUAL -->
+        <div id="menu-mekanik" class="menu-section">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">Laporan Sistem Otomasi & Kontrol</h3>
+            
+            <div class="mechanic-card">
+                <i class="fas fa-robot mechanic-icon"></i>
+                <div class="mechanic-status-text" id="mekanik_status">Sistem Siap (Standby)</div>
+                <div class="mechanic-info">Kendali jarak jauh aktif. Mesin dapat dipicu secara otomatis atau manual melalui tombol di bawah.</div>
 
-            <!-- PANEL 2 -->
-            <div class="card-large orange-border">
-                <h3><i class="fas fa-solar-panel"></i> Detail Panel 2 (Kontrol)</h3>
-                
-                <div class="detail-row">
-                    <span>Tegangan Output</span>
-                    <span class="detail-val" id="p2_tegangan">0.00 V</span>
-                </div>
-                <div class="detail-row">
-                    <span>Arus Output</span>
-                    <span class="detail-val" id="p2_arus">0 mA</span>
-                </div>
-                <div class="detail-row">
-                    <span>Intensitas Cahaya (Irradiance)</span>
-                    <span class="detail-val" id="p2_lux">0 lx</span>
-                </div>
-                <div class="detail-row">
-                    <span>Daya Masuk (Matahari)</span>
-                    <span class="detail-val" id="p2_daya_in">0.00 W</span>
-                </div>
-                <div class="detail-row">
-                    <span>Efisiensi Konversi</span>
-                    <span class="detail-val" id="p2_efisiensi">0.0 %</span>
+                <table class="detail-table" style="text-align: left;">
+                    <tr><th><i class="fas fa-calendar-check"></i> Jadwal Pembersihan</th><td>Senin, Rabu, Jumat (09:00 WIB)</td></tr>
+                    <tr><th><i class="fas fa-eye"></i> Deteksi Sensor Debu</th><td id="mekanik_debu" style="color: #e74c3c; font-weight: bold;">- mm</td></tr>
+                    <tr><th><i class="fas fa-water"></i> Ambang Batas Pendingin</th><td>Aktif otomatis jika Suhu P1 &ge; 45.0 &deg;C</td></tr>
+                </table>
+
+                <div class="btn-group">
+                    <button onclick="triggerScan()" class="btn btn-scan"><i class="fas fa-search"></i> Hanya Scan Kaca</button>
+                    <button onclick="triggerCuci()" class="btn btn-cuci"><i class="fas fa-broom"></i> Scan & Cuci</button>
+                    <button onclick="triggerSiram()" class="btn btn-siram"><i class="fas fa-tint"></i> Siram Pendingin</button>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- SCRIPT LOGIKA FIREBASE & DOWNLOAD EXCEL -->
+    <!-- SCRIPT FIREBASE & CHART.JS -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // --- 1. FUNGSI PENGAMBILAN DATA REALTIME DARI FIREBASE ---
-        // (Gunakan SSE - Server Sent Events bawaan HTML5 agar ringan dan real-time)
-        const databaseURL = "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/.json?auth=0UsDCviLx7hGkhe63U2NoBu8QkGwupvAJFBhNv4F";
-
-        const evtSource = new EventSource(databaseURL);
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            databaseURL: "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
         
-        evtSource.addEventListener("put", function(e) {
-            const data = JSON.parse(e.data);
-            const path = data.path;
-            const res = data.data;
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
 
-            // Jika ada perubahan keseluruhan root
-            if(path === "/") {
-                updateUI(res);
+        // Navigasi Menu Samping
+        function switchMenu(menuId, element) {
+            document.querySelectorAll('.menu-section').forEach(sec => sec.classList.remove('active-section'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.getElementById('menu-' + menuId).classList.add('active-section');
+            element.classList.add('active');
+        }
+
+        // Inisialisasi Grafik Chart.js
+        const ctxDaya = document.getElementById('grafikDaya').getContext('2d');
+        const grafikDaya = new Chart(ctxDaya, {
+            type: 'line',
+            data: { labels: [], datasets: [
+                { label: 'Daya P1 (W)', borderColor: '#2980b9', data: [], tension: 0.2 },
+                { label: 'Daya P2 (W)', borderColor: '#e67e22', data: [], tension: 0.2 }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        const ctxSuhu = document.getElementById('grafikSuhu').getContext('2d');
+        const grafikSuhu = new Chart(ctxSuhu, {
+            type: 'line',
+            data: { labels: [], datasets: [
+                { label: 'Suhu P1 (°C)', borderColor: '#2980b9', data: [], tension: 0.2 },
+                { label: 'Suhu P2 (°C)', borderColor: '#e67e22', data: [], tension: 0.2 }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Sinkronisasi Real-time dari Firebase
+        db.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                if(data.panel1) {
+                    document.getElementById('kpi_p1_p').innerHTML = data.panel1.daya.toFixed(2) + ' <span class="card-unit">W</span>';
+                    document.getElementById('kpi_p1_t').innerHTML = data.panel1.suhu.toFixed(1) + ' <span class="card-unit">&deg;C</span>';
+                    document.getElementById('det_p1_v').innerText = data.panel1.tegangan.toFixed(2) + ' V';
+                    document.getElementById('det_p1_i').innerText = Math.round(data.panel1.arus) + ' mA';
+                    document.getElementById('det_p1_eff').innerText = data.panel1.efisiensi.toFixed(1) + ' %';
+                    document.getElementById('det_p1_debu').innerText = data.panel1.status_debu;
+                }
+                if(data.panel2) {
+                    document.getElementById('kpi_p2_p').innerText = data.panel2.daya_out.toFixed(2) + ' W';
+                    document.getElementById('kpi_p2_t').innerHTML = data.panel2.suhu.toFixed(1) + ' <span class="card-unit">&deg;C</span>';
+                    document.getElementById('det_p2_v').innerText = data.panel2.tegangan.toFixed(2) + ' V';
+                    document.getElementById('det_p2_i').innerText = Math.round(data.panel2.arus) + ' mA';
+                    document.getElementById('det_p2_in').innerText = (data.panel2.daya_in || 0).toFixed(2) + ' W';
+                    document.getElementById('det_p2_lux').innerText = Math.round(data.panel2.lux || 0) + ' lx';
+                    document.getElementById('det_p2_eff').innerText = data.panel2.efisiensi.toFixed(1) + ' %';
+                }
+                if(data.sistem) {
+                    document.getElementById('sidebar_jam').innerText = data.sistem.waktu || "00:00:00";
+                    document.getElementById('sidebar_hari').innerText = data.sistem.hari || "-";
+                    document.getElementById('sidebar_tanggal').innerText = data.sistem.tanggal || "00/00/0000"; // TANGGAL MUNCUL DI SINI
+                    document.getElementById('sidebar_status').innerText = data.sistem.status_mesin || "Standby";
+                    document.getElementById('mekanik_status').innerText = data.sistem.status_mesin || "Standby";
+                }
+
+                // Update Grafik Live (Maksimal 15 titik data terakhir)
+                const waktu = data.sistem ? data.sistem.waktu : "";
+                if(waktu && data.panel1 && data.panel2) {
+                    if(grafikDaya.data.labels.length > 15) {
+                        grafikDaya.data.labels.shift(); grafikDaya.data.datasets[0].data.shift(); grafikDaya.data.datasets[1].data.shift();
+                        grafikSuhu.data.labels.shift(); grafikSuhu.data.datasets[0].data.shift(); grafikSuhu.data.datasets[1].data.shift();
+                    }
+                    grafikDaya.data.labels.push(waktu);
+                    grafikDaya.data.datasets[0].data.push(data.panel1.daya);
+                    grafikDaya.data.datasets[1].data.push(data.panel2.daya_out);
+                    grafikDaya.update();
+
+                    grafikSuhu.data.labels.push(waktu);
+                    grafikSuhu.data.datasets[0].data.push(data.panel1.suhu);
+                    grafikSuhu.data.datasets[1].data.push(data.panel2.suhu);
+                    grafikSuhu.update();
+                }
             }
         });
 
-        // Mengambil data awal saat halaman pertama kali dimuat
-        fetch(databaseURL)
-            .then(response => response.json())
-            .then(data => updateUI(data))
-            .catch(error => console.error("Gagal load data awal:", error));
+        // Kontrol Manual Tombol
+        function cekKesiapan() {
+            let status = document.getElementById('mekanik_status').innerText;
+            if(status !== "Sistem Siap" && status !== "Persiapan Sistem...") {
+                alert("Mesin sedang bekerja atau cooling down. Tunggu hingga status 'Sistem Siap'.");
+                return false;
+            } return true;
+        }
 
-        function updateUI(data) {
-            if(!data) return;
-
-            // Update Panel 1
-            if(data.panel1) {
-                document.getElementById('p1_daya').innerText = data.panel1.daya.toFixed(2) + " W";
-                document.getElementById('p1_suhu').innerHTML = data.panel1.suhu.toFixed(1) + " &deg;C";
-                document.getElementById('p1_tegangan').innerText = data.panel1.tegangan.toFixed(2) + " V";
-                document.getElementById('p1_arus').innerText = Math.round(data.panel1.arus) + " mA";
-                document.getElementById('p1_efisiensi').innerText = data.panel1.efisiensi.toFixed(1) + " %";
-                document.getElementById('p1_debu').innerText = data.panel1.status_debu;
+        function triggerScan() {
+            if(cekKesiapan() && confirm("Mulai SCAN KACA SAJA (Tanpa penyiraman air)?")) {
+                db.ref('/kontrol').update({ scan: true });
+                alert("Perintah Scan dikirim!");
             }
-
-            // Update Panel 2
-            if(data.panel2) {
-                document.getElementById('p2_daya_out').innerText = data.panel2.daya_out.toFixed(2) + " W";
-                document.getElementById('p2_suhu').innerHTML = data.panel2.suhu.toFixed(1) + " &deg;C";
-                document.getElementById('p2_tegangan').innerText = data.panel2.tegangan.toFixed(2) + " V";
-                document.getElementById('p2_arus').innerText = Math.round(data.panel2.arus) + " mA";
-                document.getElementById('p2_lux').innerText = Math.round(data.panel2.lux) + " lx";
-                document.getElementById('p2_daya_in').innerText = data.panel2.daya_in.toFixed(2) + " W";
-                document.getElementById('p2_efisiensi').innerText = data.panel2.efisiensi.toFixed(1) + " %";
+        }
+        function triggerCuci() {
+            if(cekKesiapan() && confirm("Mulai siklus SCAN DAN CUCI panel surya?")) {
+                db.ref('/kontrol').update({ cuci: true });
+                alert("Perintah Cuci dikirim!");
             }
-
-            // Update Sistem (Waktu, TANGGAL, Status)
-            if(data.sistem) {
-                document.getElementById('waktu_jam').innerText = data.sistem.waktu || "00:00:00";
-                document.getElementById('waktu_hari').innerText = data.sistem.hari || "Hari";
-                document.getElementById('waktu_tanggal').innerText = data.sistem.tanggal || "-"; // TANGGAL MUNCUL DISINI
-                
-                let sts = data.sistem.status_mesin || "Offline";
-                document.getElementById('status_mesin').innerText = sts;
-                
-                // Ubah warna indikator status
-                if(sts.includes("Siap") || sts.includes("Aman")) {
-                    document.getElementById('status_mesin').style.backgroundColor = "#28a745"; // Hijau
-                } else if (sts.includes("Cooldown") || sts.includes("Offline")) {
-                    document.getElementById('status_mesin').style.backgroundColor = "#6c757d"; // Abu-abu
-                } else {
-                    document.getElementById('status_mesin').style.backgroundColor = "#ffc107"; // Kuning peringatan
-                    document.getElementById('status_mesin').style.color = "black";
-                }
+        }
+        function triggerSiram() {
+            if(cekKesiapan() && confirm("Mulai penyIRAMAN PENDINGIN?")) {
+                db.ref('/kontrol').update({ siram: true });
+                alert("Perintah Siram dikirim!");
             }
         }
 
-        // --- 2. FUNGSI DOWNLOAD DATA KE EXCEL ---
+        // --- FUNGSI DOWNLOAD EXCEL (SESUAI PERMINTAAN DOSEN) ---
         function downloadDataExcel() {
-            const historyUrl = "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/riwayat_per_jam.json?auth=0UsDCviLx7hGkhe63U2NoBu8QkGwupvAJFBhNv4F";
+            const historyUrl = "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/riwayat_per_jam.json";
 
             fetch(historyUrl)
             .then(response => response.json())
             .then(data => {
                 if(!data) {
-                    alert("Belum ada data riwayat (jam 09.00 - 17.00) yang tersimpan di database.");
+                    alert("Belum ada data riwayat per jam yang tersimpan di database.");
                     return;
                 }
 
-                // Header Kolom Excel
+                // Header Kolom File CSV (Excel)
                 let csvContent = "Tanggal,Waktu,Hari,Daya Panel 1 (W),Daya Panel 2 (W),Daya Matahari (W),Suhu P1 (C),Suhu P2 (C),Cahaya (Lux),Efisiensi P1 (%),Efisiensi P2 (%)\n";
 
-                // Memasukkan isi data
                 for (let key in data) {
                     if(key !== "offline_sync") {
                         let row = data[key];
-                        
                         let tgl = row.tanggal || "-";
                         let wkt = row.waktu || "-";
                         let hri = row.hari || "-";
@@ -258,19 +331,18 @@
                     }
                 }
 
-                // Download File Otomatis
+                // Proses Download Otomatis
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", "Laporan_Skripsi_Data_Riwayat_Panel.csv");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Laporan_Skripsi_Panel_Surya.csv";
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             })
             .catch(error => {
                 console.error("Error Download:", error);
-                alert("Gagal mengunduh data! Pastikan laptop terhubung internet.");
+                alert("Gagal mengunduh data! Pastikan internet terhubung.");
             });
         }
     </script>
