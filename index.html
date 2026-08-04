@@ -232,7 +232,6 @@
                     document.getElementById('det_p1_eff').innerText = data.panel1.efisiensi.toFixed(1) + ' %';
                     document.getElementById('det_p1_debu').innerText = data.panel1.status_debu;
                     
-                    // PENAMBAHAN: Mengambil status debu ke menu mekanik
                     document.getElementById('mekanik_debu').innerText = data.panel1.status_debu;
                 }
                 if(data.panel2) {
@@ -252,7 +251,7 @@
                     document.getElementById('mekanik_status').innerText = data.sistem.status_mesin || "Standby";
                 }
 
-                // Update Grafik Live (Maksimal 15 titik data terakhir)
+                // Update Grafik Live
                 const waktu = data.sistem ? data.sistem.waktu : "";
                 if(waktu && data.panel1 && data.panel2) {
                     if(grafikDaya.data.labels.length > 15) {
@@ -300,7 +299,7 @@
             }
         }
 
-        // --- FUNGSI DOWNLOAD EXCEL (SESUAI PERMINTAAN DOSEN) ---
+        // --- FUNGSI DOWNLOAD EXCEL (REVISI PENAMBAHAN TEGANGAN & ARUS) ---
         function downloadDataExcel() {
             const historyUrl = "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/riwayat_per_jam.json";
 
@@ -312,8 +311,8 @@
                     return;
                 }
 
-                // Header Kolom File CSV (Excel)
-                let csvContent = "Tanggal,Waktu,Hari,Daya Panel 1 (W),Daya Panel 2 (W),Daya Matahari (W),Suhu P1 (C),Suhu P2 (C),Cahaya (Lux),Efisiensi P1 (%),Efisiensi P2 (%)\n";
+                // REVISI: Header Excel sudah ditambahkan Tegangan & Arus
+                let csvContent = "Tanggal,Waktu,Hari,Tegangan Panel 1 (V),Arus Panel 1 (mA),Tegangan Panel 2 (V),Arus Panel 2 (mA),Daya Panel 1 (W),Daya Panel 2 (W),Daya Matahari (W),Suhu P1 (C),Suhu P2 (C),Cahaya (Lux),Efisiensi P1 (%),Efisiensi P2 (%)\n";
 
                 for (let key in data) {
                     if(key !== "offline_sync") {
@@ -321,6 +320,13 @@
                         let tgl = row.tanggal || "-";
                         let wkt = row.waktu || "-";
                         let hri = row.hari || "-";
+                        
+                        // REVISI: Tarik variabel baru dari Firebase
+                        let teg1 = row.tegangan_panel1 || 0;
+                        let arus1 = row.arus_panel1 || 0;
+                        let teg2 = row.tegangan_panel2 || 0;
+                        let arus2 = row.arus_panel2 || 0;
+
                         let daya1 = row.daya_panel1_multimode || 0;
                         let daya2 = row.daya_panel2_kontrol || 0;
                         let dayaIn = row.daya_masuk_matahari || 0;
@@ -330,7 +336,8 @@
                         let efi1 = row.efisiensi_p1 || 0;
                         let efi2 = row.efisiensi_p2 || 0;
 
-                        csvContent += `${tgl},${wkt},${hri},${daya1},${daya2},${dayaIn},${suhu1},${suhu2},${lux},${efi1},${efi2}\n`;
+                        // REVISI: Gabungkan semua ke dalam string CSV
+                        csvContent += `${tgl},${wkt},${hri},${teg1},${arus1},${teg2},${arus2},${daya1},${daya2},${dayaIn},${suhu1},${suhu2},${lux},${efi1},${efi2}\n`;
                     }
                 }
 
