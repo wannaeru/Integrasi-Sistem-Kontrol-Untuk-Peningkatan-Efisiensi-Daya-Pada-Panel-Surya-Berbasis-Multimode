@@ -299,7 +299,7 @@
             }
         }
 
-        // --- FUNGSI DOWNLOAD EXCEL (REVISI PENAMBAHAN TEGANGAN & ARUS) ---
+        // --- FUNGSI DOWNLOAD EXCEL (SUDAH DIPERBAIKI UNTUK EXCEL INDONESIA) ---
         function downloadDataExcel() {
             const historyUrl = "https://panel-surya-multimode-dee0b-default-rtdb.asia-southeast1.firebasedatabase.app/riwayat_per_jam.json";
 
@@ -311,8 +311,8 @@
                     return;
                 }
 
-                // REVISI: Header Excel sudah ditambahkan Tegangan & Arus
-                let csvContent = "Tanggal,Waktu,Hari,Tegangan Panel 1 (V),Arus Panel 1 (mA),Tegangan Panel 2 (V),Arus Panel 2 (mA),Daya Panel 1 (W),Daya Panel 2 (W),Daya Matahari (W),Suhu P1 (C),Suhu P2 (C),Cahaya (Lux),Efisiensi P1 (%),Efisiensi P2 (%)\n";
+                // PERBAIKAN 1: Header dipisah menggunakan Titik Koma (;)
+                let csvContent = "Tanggal;Waktu;Hari;Tegangan Panel 1 (V);Arus Panel 1 (mA);Tegangan Panel 2 (V);Arus Panel 2 (mA);Daya Panel 1 (W);Daya Panel 2 (W);Daya Matahari (W);Suhu P1 (C);Suhu P2 (C);Cahaya (Lux);Efisiensi P1 (%);Efisiensi P2 (%)\n";
 
                 for (let key in data) {
                     if(key !== "offline_sync") {
@@ -321,23 +321,26 @@
                         let wkt = row.waktu || "-";
                         let hri = row.hari || "-";
                         
-                        // REVISI: Tarik variabel baru dari Firebase
-                        let teg1 = row.tegangan_panel1 || 0;
-                        let arus1 = row.arus_panel1 || 0;
-                        let teg2 = row.tegangan_panel2 || 0;
-                        let arus2 = row.arus_panel2 || 0;
+                        // PERBAIKAN 2: Bulatkan 2 desimal (.toFixed) lalu ubah titik desimal jadi koma (.replace)
+                        let teg1 = (row.tegangan_panel1 || 0).toFixed(2).replace('.', ',');
+                        let arus1 = (row.arus_panel1 || 0).toFixed(2).replace('.', ',');
+                        let teg2 = (row.tegangan_panel2 || 0).toFixed(2).replace('.', ',');
+                        let arus2 = (row.arus_panel2 || 0).toFixed(2).replace('.', ',');
 
-                        let daya1 = row.daya_panel1_multimode || 0;
-                        let daya2 = row.daya_panel2_kontrol || 0;
-                        let dayaIn = row.daya_masuk_matahari || 0;
-                        let suhu1 = row.suhu_panel1 || 0;
-                        let suhu2 = row.suhu_panel2 || 0;
-                        let lux = row.cahaya_lux || 0;
-                        let efi1 = row.efisiensi_p1 || 0;
-                        let efi2 = row.efisiensi_p2 || 0;
+                        let daya1 = (row.daya_panel1_multimode || 0).toFixed(2).replace('.', ',');
+                        let daya2 = (row.daya_panel2_kontrol || 0).toFixed(2).replace('.', ',');
+                        let dayaIn = (row.daya_masuk_matahari || 0).toFixed(2).replace('.', ',');
+                        let suhu1 = (row.suhu_panel1 || 0).toFixed(2).replace('.', ',');
+                        let suhu2 = (row.suhu_panel2 || 0).toFixed(2).replace('.', ',');
+                        
+                        // Lux biasanya angka bulat, jadi cukup toFixed(0)
+                        let lux = (row.cahaya_lux || 0).toFixed(0); 
+                        
+                        let efi1 = (row.efisiensi_p1 || 0).toFixed(2).replace('.', ',');
+                        let efi2 = (row.efisiensi_p2 || 0).toFixed(2).replace('.', ',');
 
-                        // REVISI: Gabungkan semua ke dalam string CSV
-                        csvContent += `${tgl},${wkt},${hri},${teg1},${arus1},${teg2},${arus2},${daya1},${daya2},${dayaIn},${suhu1},${suhu2},${lux},${efi1},${efi2}\n`;
+                        // PERBAIKAN 3: Satukan baris data menggunakan pemisah Titik Koma (;)
+                        csvContent += `${tgl};${wkt};${hri};${teg1};${arus1};${teg2};${arus2};${daya1};${daya2};${dayaIn};${suhu1};${suhu2};${lux};${efi1};${efi2}\n`;
                     }
                 }
 
@@ -345,7 +348,7 @@
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = "Laporan_Skripsi_Panel_Surya.csv";
+                link.download = "Laporan_Skripsi_Panel_Surya_Rapi.csv"; // Nama file saya ubah sedikit jadi "_Rapi"
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
