@@ -271,31 +271,40 @@
             }
         });
 
-        // Kontrol Manual Tombol
+        // Kontrol Manual Tombol (REVISI BYPASS COOLDOWN)
         function cekKesiapan() {
             let status = document.getElementById('mekanik_status').innerText;
-            if(status !== "Sistem Siap" && status !== "Persiapan Sistem...") {
-                alert("Mesin sedang bekerja atau cooling down. Tunggu hingga status 'Sistem Siap'.");
-                return false;
-            } return true;
+            // Jika mesin sedang menyala (bergerak/pompa nyala), munculkan peringatan
+            // TAPI kita tetap izinkan perintah jalan (return true) jika user memaksa.
+            if(status !== "Sistem Siap" && status !== "Persiapan Sistem..." && status !== "Cooldown Mode") {
+                return confirm("PERINGATAN: Mesin sedang aktif bergerak (Status: " + status + "). Apakah Anda yakin ingin mengirim perintah paksa?");
+            } 
+            return true; // Jika Cooldown Mode atau Standby, langsung lolos!
         }
 
         function triggerScan() {
-            if(cekKesiapan() && confirm("Mulai SCAN KACA SAJA (Tanpa penyiraman air)?")) {
-                db.ref('/kontrol').update({ scan: true });
-                alert("Perintah Scan dikirim!");
+            if(cekKesiapan()) {
+                if(confirm("Mulai SCAN KACA SAJA (Tanpa penyiraman air)?")) {
+                    db.ref('/kontrol').update({ scan: true });
+                    alert("Perintah Scan dikirim!");
+                }
             }
         }
+        
         function triggerCuci() {
-            if(cekKesiapan() && confirm("Mulai siklus SCAN DAN CUCI panel surya?")) {
-                db.ref('/kontrol').update({ cuci: true });
-                alert("Perintah Cuci dikirim!");
+            if(cekKesiapan()) {
+                if(confirm("Mulai siklus SCAN DAN CUCI panel surya secara paksa?")) {
+                    db.ref('/kontrol').update({ cuci: true });
+                    alert("Perintah Cuci Paksa dikirim!");
+                }
             }
         }
+        
         function triggerSiram() {
-            if(cekKesiapan() && confirm("Mulai penyIRAMAN PENDINGIN?")) {
+            // Untuk penyiraman, kita LEWATI pengecekan sama sekali! (BENAR-BENAR BYPASS)
+            if(confirm("Mulai PENYIRAMAN PENDINGIN secara paksa (Mengabaikan Cooldown)?")) {
                 db.ref('/kontrol').update({ siram: true });
-                alert("Perintah Siram dikirim!");
+                alert("Perintah Siram Paksa dikirim!");
             }
         }
 
